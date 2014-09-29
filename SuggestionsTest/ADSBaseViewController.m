@@ -16,48 +16,54 @@
 
 @implementation ADSBaseViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
+- (void)loadView
+{
+    [super loadView];
     // Temporary data to initialize array
     // This will actually come from the REST API instead
     
     self.suggestions = [[NSMutableArray alloc] initWithObjects:
-        [Suggestion suggestionWithUserlogin:@"alans19231"
-                             andDisplayName:@"Alan Shephard"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/31bebfb2e302d673a7ada29e4d449b78"]],
-        [Suggestion suggestionWithUserlogin:@"dekes19241"
-                             andDisplayName:@"Deke Slayton"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/d2b4119ddf895bd7e9eb2fad53396eec"]],
-        [Suggestion suggestionWithUserlogin:@"gordonc19271"
-                             andDisplayName:@"Gordon Cooper"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
-        [Suggestion suggestionWithUserlogin:@"gusg19261"
-                             andDisplayName:@"Gus Grissom"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/f02eda5a5457466a1c09008d11000a08"]],
-        [Suggestion suggestionWithUserlogin:@"johng19211"
-                             andDisplayName:@"John Glenn"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/31bebfb2e302d673a7ada29e4d449b78"]],
-        [Suggestion suggestionWithUserlogin:@"scottc19251"
-                             andDisplayName:@"Scott Carpenter"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/d2b4119ddf895bd7e9eb2fad53396eec"]],
-        [Suggestion suggestionWithUserlogin:@"wallys19231"
-                             andDisplayName:@"Wally Schirra"
-                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
-        nil];
+                        [Suggestion suggestionWithUserlogin:@"alans19231"
+                                             andDisplayName:@"Alan Shephard"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/31bebfb2e302d673a7ada29e4d449b78"]],
+                        [Suggestion suggestionWithUserlogin:@"dekes19241"
+                                             andDisplayName:@"Deke Slayton"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/d2b4119ddf895bd7e9eb2fad53396eec"]],
+                        [Suggestion suggestionWithUserlogin:@"gordonc19271"
+                                             andDisplayName:@"Gordon Cooper"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
+                        [Suggestion suggestionWithUserlogin:@"gusg19261"
+                                             andDisplayName:@"Gus Grissom"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/f02eda5a5457466a1c09008d11000a08"]],
+                        [Suggestion suggestionWithUserlogin:@"johng19211"
+                                             andDisplayName:@"John Glenn"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/31bebfb2e302d673a7ada29e4d449b78"]],
+                        [Suggestion suggestionWithUserlogin:@"scottc19251"
+                                             andDisplayName:@"Scott Carpenter"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/d2b4119ddf895bd7e9eb2fad53396eec"]],
+                        [Suggestion suggestionWithUserlogin:@"wallys19231"
+                                             andDisplayName:@"Wally Schirra"
+                                                andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
+                        nil];
     
     // Setup the table view
     self.suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectZero];
+    self.suggestionsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     self.suggestionsTableView.dataSource = self;
     self.suggestionsTableView.delegate = self;
     
     UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
     [self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
     
-    // [self.view addSubview:self.suggestionsTableView];
+    [self.suggestionsTableView setTranslatesAutoresizingMaskIntoConstraints:NO]; // we will manage the layout/constraints for this subview
     
-    // TODO : SETUP CONSTRAINTS LIKE SLACK DOES
+    // add the table view?
+    [self.view addSubview:self.suggestionsTableView];    
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
 }
 
 - (void)didReceiveMemoryWarning {
@@ -126,12 +132,14 @@
     if ([text isEqualToString:@"@"]) {
         if ([text isEqualToString:currentWord]) {
             NSLog(@"WOULD HAVE OPENED SUGGESTIONS");
+            [self showSuggestions:YES];
         }
     } else {
         if ([currentWord hasPrefix:@"@"]) {
             NSLog(@"I AM STILL IN A MENTION AND SHOULD UPDATE SUGGESTIONS");
         } else {
             NSLog(@"I SHOULD CLOSE THE SUGGESTIONS");
+            [self showSuggestions:NO];
         }
     }
     
@@ -142,7 +150,17 @@
 
 - (void)showSuggestions:(BOOL)show
 {
-    // CGFloat viewHeight = show ? 140.0 : 0.0;
+    CGFloat viewHeight = show ? 140.0 : 0.0;
+    
+    // DONT DO THIS - USE CONSTRAINTS INSTEAD
+    self.suggestionsTableView.frame = CGRectMake(0, 0, 
+                                                 CGRectGetWidth(self.view.bounds), 
+                                                 viewHeight);
+    if (show) {
+        [self.view bringSubviewToFront:self.suggestionsTableView];
+    } else {
+        [self.view sendSubviewToBack:self.suggestionsTableView];
+    }
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -169,6 +187,17 @@
     cell.imageView.image = [UIImage imageNamed:@"gravatar.png"];
     
     return cell;
+}
+
+#pragma mark - View lifecycle
+
+
+
+- (void)dealloc
+{
+    self.suggestionsTableView.delegate = nil;
+    self.suggestionsTableView.dataSource = nil;
+    self.suggestionsTableView = nil;
 }
 
 @end
