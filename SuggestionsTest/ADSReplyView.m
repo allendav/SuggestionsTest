@@ -10,7 +10,6 @@
 
 @interface ADSReplyView()
 
-@property (nonatomic, retain) UITextView *replyTextView;
 @property (nonatomic, strong) NSLayoutConstraint *textHConstraint;
 
 @end

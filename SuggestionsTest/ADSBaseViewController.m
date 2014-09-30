@@ -46,13 +46,27 @@
                                                 andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
                         nil];
     
-    // Create the ScrollView
+    // Add the ScrollView and its constraints
     self.scrollView = [[UIScrollView alloc] init];
     self.scrollView.backgroundColor = [UIColor colorWithRed:0.9 green:0.8 blue:0.8 alpha:0.3];
     self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-    
     [self.view addSubview:self.scrollView];
+    [self addScrollViewConstraints];
     
+    // Add the suggestions view and its constraints
+    self.suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectZero];
+    self.suggestionsTableView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.suggestionsTableView.dataSource = self;
+    self.suggestionsTableView.delegate = self;
+    UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
+    [self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
+    [self.view addSubview:self.suggestionsTableView];
+    [self addSuggestionsViewConstraints];
+    [self showSuggestions:NO];
+}
+
+-(void)addScrollViewConstraints
+{
     // Pin the UISCrollView edges to the super view edges
     NSDictionary *views = @{@"scrollview": self.scrollView };    
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollview]|"
@@ -74,20 +88,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillBeHidden:)
                                                  name:UIKeyboardWillHideNotification object:nil];
-    
-    // Setup the table view
-    //self.suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectZero];
-    //self.suggestionsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    //self.suggestionsTableView.dataSource = self;
-    //self.suggestionsTableView.delegate = self;
-    
-    //UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
-    //[self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
-    
-    //[self.suggestionsTableView setTranslatesAutoresizingMaskIntoConstraints:NO]; // we will manage the layout/constraints for this subview
-    
-    // add the table view?
-    //[self.view addSubview:self.suggestionsTableView];    
 }
 
 // Called when the UIKeyboardDidShowNotification is sent.
@@ -111,6 +111,23 @@
     self.scrollView.scrollIndicatorInsets = contentInsets;
 }
 
+- (void)addSuggestionsViewConstraints
+{
+    NSLog(@"in ADSBaseViewController addSuggestionsViewConstraints");
+    // Pin the suggestions view left and right edges to the super view edges
+    NSDictionary *views = @{@"suggestionsview": self.suggestionsTableView };    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[suggestionsview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];
+    
+    // TODO: Pin bottom of view to top of keyboard (not the whole view like this)
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[suggestionsview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -122,15 +139,7 @@
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    // Eventually this delegate should move up into ADSXXXViewController and that should then
-    // call something like filterSuggestions(keypress, word) (see below)
-    
-    // Look to the "left" until we
-    // 1) hit the beginning of the text (location 0)
-    // 2) hit a linefeed
-    // 3) hit a space
-    
+{    
     NSLog(@"in ADSBaseViewController shouldChangeTextInRange: text:%@ loc:%lu len:%lu", text, (unsigned long)range.location, range.length);
     
     unsigned long currentLocation = range.location;
@@ -170,7 +179,14 @@
         [currentWord appendString:text];
     }
     
-    NSLog( @"currentChar = %@, currentWord = %@", text, currentWord);
+    [self filterSuggestionsForKeyPress:text inWord:currentWord];
+    
+    return YES;
+}
+
+-(void)filterSuggestionsForKeyPress:(NSString *)keypress inWord:(NSString *)word
+{
+    NSLog( @"currentChar = %@, currentWord = %@", keypress, word);
     
     // This code should move into a separate method on ADSBaseViewController
     // which could be rewritten as a category - then ADSPostViewController and ADSCommentViewController
@@ -179,37 +195,31 @@
     
     // translate this into a call to filterSuggestions(keypress, word)
     
-    if ([text isEqualToString:@"@"]) {
-        if ([text isEqualToString:currentWord]) {
+    if ([keypress isEqualToString:@"@"]) {
+        if ([keypress isEqualToString:word]) {
             NSLog(@"WOULD HAVE OPENED SUGGESTIONS");
             [self showSuggestions:YES];
         }
     } else {
-        if ([currentWord hasPrefix:@"@"]) {
+        if ([word hasPrefix:@"@"]) {
             NSLog(@"I AM STILL IN A MENTION AND SHOULD UPDATE SUGGESTIONS");
         } else {
             NSLog(@"I SHOULD CLOSE THE SUGGESTIONS");
             [self showSuggestions:NO];
         }
     }
-    
-    return YES;
 }
 
 // https://github.com/slackhq/SlackTextViewController/blob/master/Source/Classes/SLKTextViewController.m
 
 - (void)showSuggestions:(BOOL)show
 {
-    // CGFloat viewHeight = show ? 140.0 : 0.0;
-    
-    // DONT DO THIS - USE CONSTRAINTS INSTEAD
-    //self.suggestionsTableView.frame = CGRectMake(0, 0, 
-    //                                             CGRectGetWidth(self.view.bounds), 
-    //                                            viewHeight);
     if (show) {
-        //[self.view bringSubviewToFront:self.suggestionsTableView];
+        self.suggestionsTableView.hidden = NO;
+        [self.view bringSubviewToFront:self.suggestionsTableView];
     } else {
-        //[self.view sendSubviewToBack:self.suggestionsTableView];
+        self.suggestionsTableView.hidden = YES;
+        [self.view sendSubviewToBack:self.suggestionsTableView];
     }
 }
 

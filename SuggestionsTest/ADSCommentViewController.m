@@ -56,7 +56,22 @@
     self.postView.delegate = self;
     [self.postView setEditable:NO];
     [self.scrollView addSubview:self.postView];
+    [self addPostViewConstraints];
     
+    // Add the reply view
+    self.replyView = [[ADSReplyView alloc] initWithFrame:CGRectZero];
+    self.replyView.backgroundColor = [UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.9];
+    self.replyView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.replyView.replyTextView.delegate = self;
+    [self.view addSubview:self.replyView];
+    [self addReplyViewConstraints];
+    
+    // Now that the reply view exists, go ahead and add the suggestion view constraints
+    [self addSuggestionsViewConstraints];
+}
+
+-(void)addPostViewConstraints
+{
     // Pin the UITextView edges to the UIScrollView edges
     NSDictionary *views = @{@"textview": self.postView };    
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[textview]|"
@@ -88,17 +103,11 @@
                                                          constant:100.0f];
     
     [self.postView addConstraint:self.textHeightConstraint];
-    
-    // Add the reply view
-    self.replyView = [[ADSReplyView alloc] initWithFrame:CGRectZero];
-    self.replyView.backgroundColor = [UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.9];
-    self.replyView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.replyView];
+}
 
-    // TODO Delegate
-    // TODO Constraints
-    
-    views = @{@"textview": self.postView, @"replyview": self.replyView };
+-(void)addReplyViewConstraints
+{
+    NSDictionary *views  = @{@"textview": self.postView, @"replyview": self.replyView };
     // Pin the reply view left and right edges to the view edges
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[replyview]|"
                                                                             options:0
@@ -137,6 +146,38 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
 
+}
+
+- (void)addSuggestionsViewConstraints
+{
+    // Note:  We are overriding the base class method here so that we can pin
+    // the bottom of the suggestions view to the top of the comment reply view
+    
+    NSLog(@"in ADSCommentViewController addSuggestionsViewConstraints");
+
+    // if the reply view doesn't exist yet, don't bother adding constraints yet
+    if (self.replyView) {
+        NSDictionary *views = @{@"suggestionsview": self.suggestionsTableView, @"replyview": self.replyView };    
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[suggestionsview]|"
+                                                                          options:0
+                                                                          metrics:nil
+                                                                            views:views]];
+        
+        // Pin suggestion view top to the top of the view (so it can appear below translucent nav)
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[suggestionsview]"
+                                                                          options:0
+                                                                          metrics:nil
+                                                                            views:views]];
+        
+        // Pin suggestion view bottom to the top of the reply view
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.suggestionsTableView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.replyView
+                                                              attribute:NSLayoutAttributeTop
+                                                             multiplier:1.0
+                                                               constant:0]];
+    }
 }
 
 - (void)viewDidLoad

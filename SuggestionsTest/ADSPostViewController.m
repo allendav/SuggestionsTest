@@ -52,7 +52,11 @@
 
     self.postView.delegate = self;
     [self.scrollView addSubview:self.postView];
-    
+    [self addPostViewConstraints];
+}
+
+-(void)addPostViewConstraints
+{
     // Pin the UITextView edges to the UIScrollView edges
     NSDictionary *views = @{@"textview": self.postView };    
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[textview]|"

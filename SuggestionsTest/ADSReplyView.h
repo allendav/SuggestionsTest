@@ -10,4 +10,6 @@
 
 @interface ADSReplyView : UIView
 
+@property (nonatomic, retain) UITextView *replyTextView;
+
 @end
