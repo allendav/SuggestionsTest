@@ -105,19 +105,38 @@
                                                                             metrics:nil
                                                                               views:views]];
     // Set the reply view height to 100, pinned to the bottom edge
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[replyview(100)]|"
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[replyview(100)]"
                                                                             options:0
                                                                             metrics:nil
                                                                               views:views]];
 
+    
+    // So... now we want to pin the reply view bottom to the super view bottom
+    // and then we will adjust its constant from 0 to -keyboardheight depending on whether
+    // the keyboard is showing
+    
+    
     self.replyBottomConstraint = [NSLayoutConstraint constraintWithItem:self.replyView
                                                               attribute:NSLayoutAttributeBottom
                                                               relatedBy:NSLayoutRelationEqual
-                                                                 toItem:self.bottomLayoutGuide
-                                                              attribute:NSLayoutAttributeTop
+                                                                 toItem:self.view
+                                                              attribute:NSLayoutAttributeBottom
                                                              multiplier:1
                                                                constant:0];
     [self.view addConstraint:self.replyBottomConstraint];
+    
+    // start listening to the keyboard so we can adjust that constant
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillChangeFrameNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+
 }
 
 - (void)viewDidLoad
@@ -143,6 +162,31 @@
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    NSDictionary *info = [notification userInfo];
+    NSValue *kbFrame = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+    NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    CGRect keyboardFrame = [kbFrame CGRectValue];
+    
+    CGFloat height = keyboardFrame.size.height;
+    
+    self.replyBottomConstraint.constant = -height;
+    
+    [UIView animateWithDuration:animationDuration animations:^{
+        [self.view layoutIfNeeded];
+    }];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    NSDictionary *info = [notification userInfo];
+    NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    self.replyBottomConstraint.constant = 0;
+    [UIView animateWithDuration:animationDuration animations:^{
+        [self.view layoutIfNeeded];
+    }];
 }
 
 @end
