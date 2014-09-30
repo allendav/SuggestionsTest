@@ -10,8 +10,8 @@
 
 @interface ADSPostViewController ()
 
-@property (nonatomic, strong) NSLayoutConstraint *bottomConstraint;
-
+@property (nonatomic, retain) UITextView *postView;
+@property (nonatomic, strong) NSLayoutConstraint *textHConstraint;
 
 @end
 
@@ -21,99 +21,94 @@
 {
     [super loadView];
     
-    self.textView = [[UITextView alloc] initWithFrame:CGRectZero];
-    self.textView.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:0.9];
-    self.textView.text = @"Type things that look like @mentions and then look in XCode's logs.\n\nSuggestion table view not hooked up yet.";
-    self.textView.delegate = self;
-    [self.view addSubview:self.textView];
-    [self.textView becomeFirstResponder];
+    // Create the TextView
+    self.postView = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, 300, 200)];
+    self.postView.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:0.9];
+    self.postView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [self.textView setTranslatesAutoresizingMaskIntoConstraints:NO]; // we will manage the layout/constraints for this subview
+    self.postView.text = @"Lorem ipsum \n\n \
+        This is meant to simulate a post \n\n \
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce scelerisque massa eu vulputate ullamcorper. Ut ante ex, \
+        tristique vel dolor consequat, pretium imperdiet urna. Curabitur pulvinar erat eu dignissim volutpat. Suspendisse id tellus \
+        ut augue tempus dapibus vel in eros. Nullam semper pulvinar magna finibus aliquam. Vivamus ultricies in orci quis cursus. \
+        Suspendisse potenti. Morbi maximus vitae urna nec suscipit. Donec tempor euismod dapibus. Sed at dui vitae tellus venenatis \
+        dignissim eu interdum turpis. Nulla molestie, tellus sed aliquam rhoncus, neque mi accumsan mi, vel consectetur ante lorem \
+        sed odio. Curabitur pretium cursus dolor, at laoreet dui aliquam at. Sed pharetra eros sit amet porta mattis. Donec nec \
+        suscipit leo. Nam orci erat, venenatis id urna laoreet, sodales interdum enim.\n\n \
+        Fusce commodo ex neque, quis consequat quam porta ut. Suspendisse vel nulla nec massa laoreet tincidunt eu vitae quam. Ut \
+        eget tincidunt ex. Mauris rutrum, risus at suscipit convallis, lectus nulla volutpat ante, in rutrum sem felis et \
+        nisl. Vivamus nisl tellus, bibendum id viverra ac, accumsan ut dolor. Nam ullamcorper libero diam. Proin quis neque in \
+        neque ultricies euismod et at eros. Morbi pretium in sapien a auctor.\n\n \
+        Nullam rutrum volutpat sapien, vel pellentesque tortor venenatis vitae. Donec ut pretium ante, vel consectetur est. Mauris \
+        hendrerit orci in nisl aliquet, id semper sapien auctor. Duis quis augue vel augue consequat commodo. Interdum et malesuada \
+        fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam scelerisque in \
+        velit sit amet ornare. \n\n \
+        Sed tincidunt ullamcorper vestibulum. Praesent eget augue dui. Vestibulum eu dictum ipsum, non scelerisque libero. Fusce \
+        ut mauris magna. Integer vitae fringilla nisi, at fringilla sapien. Vivamus eget auctor lorem. Maecenas convallis nibh at \
+        mi lacinia, eu commodo arcu tristique. Duis rutrum nibh sed metus suscipit vestibulum. \n\n \
+        Type things that look like @mentions and then look in XCode's logs.\n\n \
+        Suggestion table view not hooked up yet. \n\n \
+        This is the end of the post.";
+
+    self.postView.delegate = self;
+    [self.scrollView addSubview:self.postView];
     
-    NSDictionary *views = @{@"textView": self.textView,
-                            };
+    // Pin the UITextView edges to the UIScrollView edges
+    NSDictionary *views = @{@"textview": self.postView };    
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[textview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[textview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];
+
+    // The UITextView must have at least a width defined, so we pin it to the scrollView width
+    [self.scrollView addConstraint:[NSLayoutConstraint constraintWithItem:self.postView
+                                                                attribute:NSLayoutAttributeWidth
+                                                                relatedBy:NSLayoutRelationEqual
+                                                                   toItem:self.scrollView
+                                                                attribute:NSLayoutAttributeWidth
+                                                               multiplier:1.0
+                                                                 constant:0]];
+
+    // Lastly, add a height constraint reference so we can update the constraint
+    // as the text grows/shrinks
+    self.textHConstraint = [NSLayoutConstraint constraintWithItem:self.postView
+                                                        attribute:NSLayoutAttributeHeight
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:nil
+                                                        attribute:nil
+                                                       multiplier:1.0f
+                                                         constant:100.0f];
     
-    
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[textView]-|" options:0 metrics:nil views:views]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-75-[textView]-16@250-|" options:0 metrics:nil views:views]]; // V:|-75-[textView]-16@250-| <-- change 16 to 0 for flush
-    
-    self.bottomConstraint = [NSLayoutConstraint constraintWithItem:self.textView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.bottomLayoutGuide attribute:NSLayoutAttributeTop multiplier:1 constant:0];
-    [self.view addConstraint:self.bottomConstraint];
-    
-    // TODO: Get the nav bar height and adjust the top constraint appropriately
-    
-    // TODO: MAnage the textView's bottom constraint based on whether the keyboard is showing
-    
-    
+    [self.postView addConstraint:self.textHConstraint];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.title = @"Post UX";
-    [self observeKeyboard];
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    CGSize sizeThatShouldFitTheContent = [self.postView sizeThatFits:self.postView.frame.size];
+    self.textHConstraint.constant = sizeThatShouldFitTheContent.height;
+    [self.view layoutIfNeeded];
+}
+
 - (void)updateViewConstraints
 {
-    
-    
     [super updateViewConstraints];
-}
-
-- (void)observeKeyboard {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-}
-
-- (void)keyboardDidShow:(NSNotification *)notification
-{
-    //NSDictionary *info = [notification userInfo];
-    //NSValue *kbFrame = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
-    //NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    //CGRect keyboardFrame = [kbFrame CGRectValue];
-    
-    //BOOL isPortrait = UIDeviceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation);
-    //CGFloat height = isPortrait ? keyboardFrame.size.height : keyboardFrame.size.width;
-    //NSLog(@"The keyboard height is: %f", height);
-        
-    //NSLog(@"Updating constraints.");
-    //self.keyboardHC.constant = -height;
-    
-    //[self.view setNeedsUpdateConstraints];
-    
-    //[UIView animateWithDuration:animationDuration animations:^{
-    //    [self.view layoutIfNeeded];
-    //}];
-    
-    CGRect frame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect newFrame = [self.view convertRect:frame fromView:[[UIApplication sharedApplication] delegate].window];
-    self.bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame) - 16 /* get rid of -16 for flush */;
-    [self.view setNeedsUpdateConstraints];
-    [self.view layoutIfNeeded];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    //NSDictionary *info = [notification userInfo];
-    //NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    
-    //self.keyboardHC.constant = 0;
-    
-    //[self.view setNeedsUpdateConstraints];
-    
-    //[UIView animateWithDuration:animationDuration animations:^{
-    //    [self.view layoutIfNeeded];
-    //}];
-    
-    self.bottomConstraint.constant = -16; // make 0 for flush, -16 for gap when keyboard closed
-    [self.view setNeedsUpdateConstraints];
-    [self.view layoutIfNeeded];
 }
 
 @end

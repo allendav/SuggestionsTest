@@ -46,19 +46,69 @@
                                                 andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
                         nil];
     
+    // Create the ScrollView
+    self.scrollView = [[UIScrollView alloc] init];
+    self.scrollView.backgroundColor = [UIColor colorWithRed:0.9 green:0.8 blue:0.8 alpha:0.3];
+    self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self.view addSubview:self.scrollView];
+    
+    // Pin the UISCrollView edges to the super view edges
+    NSDictionary *views = @{@"scrollview": self.scrollView };    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[scrollview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];
+    
+    // Register for keyboard notifications so we can resize our view the iOS7 way
+    // (so that it continues to appear underneath the semi-transparent keyboard)
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWasShown:)
+                                                 name:UIKeyboardDidShowNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification object:nil];
+    
     // Setup the table view
-    self.suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectZero];
-    self.suggestionsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    self.suggestionsTableView.dataSource = self;
-    self.suggestionsTableView.delegate = self;
+    //self.suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectZero];
+    //self.suggestionsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    //self.suggestionsTableView.dataSource = self;
+    //self.suggestionsTableView.delegate = self;
     
-    UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
-    [self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
+    //UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
+    //[self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
     
-    [self.suggestionsTableView setTranslatesAutoresizingMaskIntoConstraints:NO]; // we will manage the layout/constraints for this subview
+    //[self.suggestionsTableView setTranslatesAutoresizingMaskIntoConstraints:NO]; // we will manage the layout/constraints for this subview
     
     // add the table view?
-    [self.view addSubview:self.suggestionsTableView];    
+    //[self.view addSubview:self.suggestionsTableView];    
+}
+
+// Called when the UIKeyboardDidShowNotification is sent.
+- (void)keyboardWasShown:(NSNotification*)aNotification
+{
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
+    self.scrollView.contentInset = contentInsets;
+    self.scrollView.scrollIndicatorInsets = contentInsets;
+    
+    // TODO: Scroll text caret into view
+}
+
+// Called when the UIKeyboardWillHideNotification is sent
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
+    self.scrollView.contentInset = contentInsets;
+    self.scrollView.scrollIndicatorInsets = contentInsets;
 }
 
 - (void)viewDidLoad {
@@ -150,16 +200,16 @@
 
 - (void)showSuggestions:(BOOL)show
 {
-    CGFloat viewHeight = show ? 140.0 : 0.0;
+    // CGFloat viewHeight = show ? 140.0 : 0.0;
     
     // DONT DO THIS - USE CONSTRAINTS INSTEAD
-    self.suggestionsTableView.frame = CGRectMake(0, 0, 
-                                                 CGRectGetWidth(self.view.bounds), 
-                                                 viewHeight);
+    //self.suggestionsTableView.frame = CGRectMake(0, 0, 
+    //                                             CGRectGetWidth(self.view.bounds), 
+    //                                            viewHeight);
     if (show) {
-        [self.view bringSubviewToFront:self.suggestionsTableView];
+        //[self.view bringSubviewToFront:self.suggestionsTableView];
     } else {
-        [self.view sendSubviewToBack:self.suggestionsTableView];
+        //[self.view sendSubviewToBack:self.suggestionsTableView];
     }
 }
 
@@ -195,9 +245,11 @@
 
 - (void)dealloc
 {
-    self.suggestionsTableView.delegate = nil;
-    self.suggestionsTableView.dataSource = nil;
-    self.suggestionsTableView = nil;
+    self.scrollView = nil;
+    
+    //self.suggestionsTableView.delegate = nil;
+    //self.suggestionsTableView.dataSource = nil;
+    //self.suggestionsTableView = nil;
 }
 
 @end

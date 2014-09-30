@@ -10,6 +10,7 @@
 
 @interface ADSBaseViewController : UIViewController <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
+@property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UITableView *suggestionsTableView;
 @property (strong, nonatomic) NSMutableArray *suggestions;
 

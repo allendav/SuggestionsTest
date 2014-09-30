@@ -11,6 +11,4 @@
 
 @interface ADSPostViewController : ADSBaseViewController
 
-@property (nonatomic, retain) UITextView *textView;
-
 @end
