@@ -11,6 +11,4 @@
 
 @interface ADSCommentViewController : ADSBaseViewController
 
-@property (nonatomic, retain) UITextView *textView;
-
 @end
