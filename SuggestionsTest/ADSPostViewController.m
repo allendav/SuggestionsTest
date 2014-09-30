@@ -79,7 +79,7 @@
                                                         attribute:NSLayoutAttributeHeight
                                                         relatedBy:NSLayoutRelationEqual
                                                            toItem:nil
-                                                        attribute:nil
+                                                        attribute:NSLayoutAttributeHeight
                                                        multiplier:1.0f
                                                          constant:100.0f];
     

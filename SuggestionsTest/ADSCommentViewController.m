@@ -7,10 +7,12 @@
 //
 
 #import "ADSCommentViewController.h"
+#import "ADSReplyView.h"
 
 @interface ADSCommentViewController ()
 
 @property (nonatomic, retain) UITextView *postView;
+@property (nonatomic, retain) ADSReplyView *replyView;
 @property (nonatomic, strong) NSLayoutConstraint *textHConstraint;
 
 @end
@@ -80,11 +82,20 @@
                                                         attribute:NSLayoutAttributeHeight
                                                         relatedBy:NSLayoutRelationEqual
                                                            toItem:nil
-                                                        attribute:nil
+                                                        attribute:NSLayoutAttributeHeight
                                                        multiplier:1.0f
                                                          constant:100.0f];
     
     [self.postView addConstraint:self.textHConstraint];
+    
+    // Add the reply view
+    self.replyView = [[ADSReplyView alloc] initWithFrame:CGRectMake(16, 100, 300, 300)];
+    self.replyView.backgroundColor = [UIColor colorWithRed:0.7 green:0.9 blue:0.7 alpha:0.9];
+    self.replyView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.replyView];
+
+    // TODO Delegate
+    // TODO Constraints
 }
 
 - (void)viewDidLoad
