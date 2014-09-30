@@ -13,7 +13,8 @@
 
 @property (nonatomic, retain) UITextView *postView;
 @property (nonatomic, retain) ADSReplyView *replyView;
-@property (nonatomic, strong) NSLayoutConstraint *textHConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *textHeightConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *replyBottomConstraint;
 
 @end
 
@@ -78,7 +79,7 @@
     
     // Lastly, add a height constraint reference so we can update the constraint
     // as the text grows/shrinks
-    self.textHConstraint = [NSLayoutConstraint constraintWithItem:self.postView
+    self.textHeightConstraint = [NSLayoutConstraint constraintWithItem:self.postView
                                                         attribute:NSLayoutAttributeHeight
                                                         relatedBy:NSLayoutRelationEqual
                                                            toItem:nil
@@ -86,16 +87,37 @@
                                                        multiplier:1.0f
                                                          constant:100.0f];
     
-    [self.postView addConstraint:self.textHConstraint];
+    [self.postView addConstraint:self.textHeightConstraint];
     
     // Add the reply view
-    self.replyView = [[ADSReplyView alloc] initWithFrame:CGRectMake(16, 100, 300, 300)];
-    self.replyView.backgroundColor = [UIColor colorWithRed:0.7 green:0.9 blue:0.7 alpha:0.9];
+    self.replyView = [[ADSReplyView alloc] initWithFrame:CGRectZero];
+    self.replyView.backgroundColor = [UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.9];
     self.replyView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.replyView];
 
     // TODO Delegate
     // TODO Constraints
+    
+    views = @{@"textview": self.postView, @"replyview": self.replyView };
+    // Pin the reply view left and right edges to the view edges
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[replyview]|"
+                                                                            options:0
+                                                                            metrics:nil
+                                                                              views:views]];
+    // Set the reply view height to 100, pinned to the bottom edge
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[replyview(100)]|"
+                                                                            options:0
+                                                                            metrics:nil
+                                                                              views:views]];
+
+    self.replyBottomConstraint = [NSLayoutConstraint constraintWithItem:self.replyView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.bottomLayoutGuide
+                                                              attribute:NSLayoutAttributeTop
+                                                             multiplier:1
+                                                               constant:0];
+    [self.view addConstraint:self.replyBottomConstraint];
 }
 
 - (void)viewDidLoad
@@ -114,7 +136,7 @@
 {
     [super viewDidLayoutSubviews];
     CGSize sizeThatShouldFitTheContent = [self.postView sizeThatFits:self.postView.frame.size];
-    self.textHConstraint.constant = sizeThatShouldFitTheContent.height;
+    self.textHeightConstraint.constant = sizeThatShouldFitTheContent.height;
     [self.view layoutIfNeeded];
 }
 

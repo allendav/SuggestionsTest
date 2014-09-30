@@ -23,7 +23,7 @@
     if ( self )
     {
         self.replyTextView = [[UITextView alloc] initWithFrame:CGRectZero];
-        self.replyTextView.backgroundColor = [UIColor colorWithRed:0.7 green:0.7 blue:0.9 alpha:0.9];
+        self.replyTextView.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.9 alpha:0.9];
         self.replyTextView.translatesAutoresizingMaskIntoConstraints = NO;
         self.replyTextView.text = @"This is a test reply.  You can edit this.\n\nAnd it even supports multi-line text.";
     
@@ -37,7 +37,7 @@
 {
     // TODO: Use constraints instead
     CGSize frameSize = self.frame.size;
-    [self.replyTextView setFrame:CGRectMake(16, 16, frameSize.width - 32, frameSize.height - 32)];
+    [self.replyTextView setFrame:CGRectMake(8, 8, frameSize.width - 96, frameSize.height - 16)];
 }
 
 @end
