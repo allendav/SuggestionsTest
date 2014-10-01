@@ -60,7 +60,7 @@
     
     // Add the reply view
     self.replyView = [[ADSReplyView alloc] initWithFrame:CGRectZero];
-    self.replyView.backgroundColor = [UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.9];
+    self.replyView.backgroundColor = [UIColor colorWithRed:0.945 green:0.965 blue:0.976 alpha:0.95];
     self.replyView.translatesAutoresizingMaskIntoConstraints = NO;
     self.replyView.replyTextView.delegate = self;
     [self.view addSubview:self.replyView];
@@ -114,7 +114,7 @@
                                                                             metrics:nil
                                                                               views:views]];
     // Set the reply view height to 100, pinned to the bottom edge
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[replyview(100)]"
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[replyview(80)]"
                                                                             options:0
                                                                             metrics:nil
                                                                               views:views]];

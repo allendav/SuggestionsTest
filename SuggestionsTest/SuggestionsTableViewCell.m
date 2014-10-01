@@ -27,14 +27,14 @@
         reuseID = reuseIdentifier;
         
         self.usernameLabel = [[UILabel alloc] init];
-        [self.usernameLabel setTextColor:[UIColor blueColor]];
-        [self.usernameLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:12.0f]];
+        [self.usernameLabel setTextColor:[UIColor colorWithRed:0 green:0.737 blue:0.961 alpha:1.0]];
+        [self.usernameLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
         [self.usernameLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         [self.contentView addSubview:self.usernameLabel];
 
         self.displayNameLabel = [[UILabel alloc] init];
-        [self.displayNameLabel setTextColor:[UIColor blackColor]];
-        [self.displayNameLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:12.0f]];
+        [self.displayNameLabel setTextColor:[UIColor colorWithRed:0.667 green:0.667 blue:0.667 alpha:1.0]];
+        [self.displayNameLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:16.0f]];
         [self.displayNameLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         [self.contentView addSubview:self.displayNameLabel];
 
@@ -58,7 +58,7 @@
         [self.contentView addConstraints:horizConstraints];
         
         // Vertical height constraint
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentview(==32)]"
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentview(==48)]"
                                                                                  options:0
                                                                                  metrics:nil
                                                                                    views:views]];
