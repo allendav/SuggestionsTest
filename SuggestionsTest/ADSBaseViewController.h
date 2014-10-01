@@ -7,11 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Suggestion.h"
 
 @interface ADSBaseViewController : UIViewController <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
+@property (strong, atomic) NSString *searchText;
+@property (strong, atomic) NSMutableArray *suggestions;
+@property (strong, atomic) NSMutableArray *searchResults;
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UITableView *suggestionsTableView;
-@property (strong, nonatomic) NSMutableArray *suggestions;
+
+- (void)showSuggestions:(BOOL)show;
 
 @end

@@ -230,4 +230,22 @@
     }];
 }
 
+#pragma mark - UITableViewDelegate Methods
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Grab what they picked
+    Suggestion *suggestion = [self.searchResults objectAtIndex:indexPath.row];
+    
+    // Grow the selection by the length of the searchText
+    NSRange selectionRange = self.replyView.replyTextView.selectedRange;
+    selectionRange.location -= (self.searchText.length);
+    selectionRange.length += (self.searchText.length);
+    self.replyView.replyTextView.selectedRange = selectionRange;
+    [self.replyView.replyTextView replaceRange:[self.replyView.replyTextView selectedTextRange] withText:suggestion.userLogin];    
+    
+    // Hide the suggestions view - we're done with it
+    [self showSuggestions:NO];
+}
+
 @end

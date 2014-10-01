@@ -7,12 +7,9 @@
 //
 
 #import "ADSBaseViewController.h"
-#import "Suggestion.h"
 #import "SuggestionsTableViewCell.h"
 
 @interface ADSBaseViewController ()
-
-@property (strong, atomic) NSMutableArray *searchResults;
 
 @end
 
@@ -23,6 +20,8 @@
     [super loadView];
     // Temporary data to initialize array
     // This will actually come from the REST API instead
+    
+    self.searchText = @"";
     
     self.suggestions = [[NSMutableArray alloc] initWithObjects:
                         [Suggestion suggestionWithUserlogin:@"alans19231"
@@ -121,7 +120,6 @@
 
 - (void)addSuggestionsViewConstraints
 {
-    NSLog(@"in ADSBaseViewController addSuggestionsViewConstraints");
     // Pin the suggestions view left and right edges to the super view edges
     NSDictionary *views = @{@"suggestionsview": self.suggestionsTableView };    
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[suggestionsview]|"
@@ -148,8 +146,6 @@
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {    
-    NSLog(@"in ADSBaseViewController shouldChangeTextInRange: text:%@ loc:%lu len:%lu", text, (unsigned long)range.location, range.length);
-    
     unsigned long currentLocation = range.location;
     bool done = false;
     NSMutableString *currentWord = [NSMutableString new];
@@ -170,7 +166,7 @@
                 done = true;
             } else {
                 // get the character at that location
-                // TODO: Better handle weird characters like .-)( etc
+                // TODO: Better handle characters like .-)( etc
                 NSRange charRange = NSMakeRange(currentLocation, 1);
                 NSString *charAtRange = [textView.text substringWithRange:charRange];
                 if ([charAtRange isEqualToString:@" "]) {
@@ -194,8 +190,6 @@
 
 -(void)filterSuggestionsForKeyPress:(NSString *)keypress inWord:(NSString *)word
 {
-    NSLog( @"currentChar = %@, currentWord = %@", keypress, word);
-    
     // This code should move into a separate method on ADSBaseViewController
     // which could be rewritten as a category - then ADSPostViewController and ADSCommentViewController
     // could simply call something like onContentChanged(keypress, word) to let
@@ -221,6 +215,9 @@
 
 - (void)updateSearchResultsForText:(NSString *)text
 {
+    // Save how we got here
+    self.searchText = text;
+    
     if (0 == text.length) {
         self.searchResults = [self.suggestions mutableCopy];
     } else {
@@ -236,6 +233,7 @@
         self.suggestionsTableView.hidden = NO;
         [self.view bringSubviewToFront:self.suggestionsTableView];
     } else {
+        [self updateSearchResultsForText:@""];
         self.suggestionsTableView.hidden = YES;
         [self.view sendSubviewToBack:self.suggestionsTableView];
     }
@@ -262,6 +260,19 @@
     
     return cell;
 }
+
+#pragma mark - UITableViewDelegate Methods
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Child classes should override this method to do something with the 
+    // selected suggestion.
+    
+    // The child class implementation should then call showSuggestions:NO when it is done
+    // with its unique logic to hide the suggestions view and reset the search results, ala
+    [self showSuggestions:NO];
+}
+
 
 #pragma mark - View lifecycle
 
