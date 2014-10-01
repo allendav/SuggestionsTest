@@ -12,6 +12,8 @@
 
 @interface ADSBaseViewController ()
 
+@property (strong, atomic) NSMutableArray *searchResults;
+
 @end
 
 @implementation ADSBaseViewController
@@ -45,6 +47,9 @@
                                              andDisplayName:@"Wally Schirra"
                                                 andImageURL:[NSURL URLWithString:@"http://s.gravatar.com/avatar/9d7158527cccb23c82f065f7f572d49d"]],
                         nil];
+    
+    // Initial state
+    self.searchResults = [self.suggestions mutableCopy];
     
     // Add the ScrollView and its constraints
     self.scrollView = [[UIScrollView alloc] init];
@@ -200,21 +205,31 @@
     
     if ([keypress isEqualToString:@"@"]) {
         if ([keypress isEqualToString:word]) {
-            NSLog(@"WOULD HAVE OPENED SUGGESTIONS");
+            [self updateSearchResultsForText:@""];
             [self showSuggestions:YES];
         }
     } else {
         if ([word hasPrefix:@"@"]) {
-            NSLog(@"I AM STILL IN A MENTION AND SHOULD UPDATE SUGGESTIONS");
+            [self updateSearchResultsForText:[word substringFromIndex:1]];
+            [self.suggestionsTableView reloadData];
         } else {
-            NSLog(@"I SHOULD CLOSE THE SUGGESTIONS");
+            [self updateSearchResultsForText:@""];
             [self showSuggestions:NO];
         }
     }
 }
 
-// https://github.com/slackhq/SlackTextViewController/blob/master/Source/Classes/SLKTextViewController.m
-
+- (void)updateSearchResultsForText:(NSString *)text
+{
+    if (0 == text.length) {
+        self.searchResults = [self.suggestions mutableCopy];
+    } else {
+        NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(displayName contains[c] %@) OR (userLogin contains[c] %@)",
+                                        text, text];
+        self.searchResults = [[self.suggestions filteredArrayUsingPredicate:resultPredicate] mutableCopy];
+    }
+}
+             
 - (void)showSuggestions:(BOOL)show
 {
     if (show) {
@@ -230,31 +245,25 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // todo : filtering
-    return [self.suggestions count];
+    return [self.searchResults count];    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // todo : filtering
-    SuggestionsTableViewCell *cell = [self.suggestionsTableView dequeueReusableCellWithIdentifier:@"SuggestionsTableViewCell" forIndexPath:indexPath];
-    
+    SuggestionsTableViewCell *cell = [self.suggestionsTableView dequeueReusableCellWithIdentifier:@"SuggestionsTableViewCell" forIndexPath:indexPath];    
     Suggestion *suggestion = nil;
     
-    suggestion = [self.suggestions objectAtIndex:indexPath.row];
-
+    suggestion = [self.searchResults objectAtIndex:indexPath.row];        
+    
     cell.usernameLabel.text = @"@";
     cell.usernameLabel.text = [cell.usernameLabel.text stringByAppendingString:suggestion.userLogin];
     cell.displayNameLabel.text = suggestion.displayName;
-    
-    cell.avatarImageView.image = [UIImage imageNamed:@"gravatar.png"];
+    cell.avatarImageView.image = [UIImage imageNamed:@"gravatar.png"]; // TODO actual gravatar
     
     return cell;
 }
 
 #pragma mark - View lifecycle
-
-
 
 - (void)dealloc
 {
