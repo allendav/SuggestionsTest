@@ -18,7 +18,6 @@
 		31C8B42319D48700006E55FA /* ADSPostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C8B42119D48700006E55FA /* ADSPostViewController.m */; };
 		31C8B42819D4873B006E55FA /* ADSCommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C8B42619D4873B006E55FA /* ADSCommentViewController.m */; };
 		31C8B42C19D4A6FA006E55FA /* ADSBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C8B42B19D4A6FA006E55FA /* ADSBaseViewController.m */; };
-		31C8B42E19D4D185006E55FA /* SuggestionsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 31C8B42D19D4D185006E55FA /* SuggestionsTableViewCell.xib */; };
 		31C8B43119D4D341006E55FA /* Suggestion.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C8B43019D4D341006E55FA /* Suggestion.m */; };
 		31C8B43719D4E495006E55FA /* SuggestionsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C8B43619D4E495006E55FA /* SuggestionsTableViewCell.m */; };
 		31C8B43919D4E573006E55FA /* gravatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 31C8B43819D4E573006E55FA /* gravatar.png */; };
@@ -56,7 +55,6 @@
 		31C8B42619D4873B006E55FA /* ADSCommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADSCommentViewController.m; sourceTree = "<group>"; };
 		31C8B42A19D4A6FA006E55FA /* ADSBaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSBaseViewController.h; sourceTree = "<group>"; };
 		31C8B42B19D4A6FA006E55FA /* ADSBaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADSBaseViewController.m; sourceTree = "<group>"; };
-		31C8B42D19D4D185006E55FA /* SuggestionsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SuggestionsTableViewCell.xib; sourceTree = "<group>"; };
 		31C8B42F19D4D341006E55FA /* Suggestion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Suggestion.h; sourceTree = "<group>"; };
 		31C8B43019D4D341006E55FA /* Suggestion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Suggestion.m; sourceTree = "<group>"; };
 		31C8B43519D4E495006E55FA /* SuggestionsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuggestionsTableViewCell.h; sourceTree = "<group>"; };
@@ -156,7 +154,6 @@
 		31C8B43319D4E439006E55FA /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				31C8B42D19D4D185006E55FA /* SuggestionsTableViewCell.xib */,
 				31C8B43519D4E495006E55FA /* SuggestionsTableViewCell.h */,
 				31C8B43619D4E495006E55FA /* SuggestionsTableViewCell.m */,
 			);
@@ -263,7 +260,6 @@
 				31C8B40819D4817C006E55FA /* LaunchScreen.xib in Resources */,
 				31C8B43919D4E573006E55FA /* gravatar.png in Resources */,
 				31C8B40519D4817C006E55FA /* Images.xcassets in Resources */,
-				31C8B42E19D4D185006E55FA /* SuggestionsTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

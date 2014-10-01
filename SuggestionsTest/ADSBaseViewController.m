@@ -58,8 +58,11 @@
     self.suggestionsTableView.translatesAutoresizingMaskIntoConstraints = NO;
     self.suggestionsTableView.dataSource = self;
     self.suggestionsTableView.delegate = self;
-    UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
-    [self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
+    
+    [self.suggestionsTableView registerClass:[SuggestionsTableViewCell class] forCellReuseIdentifier:@"SuggestionsTableViewCell"];
+    
+    //UINib *nib = [UINib nibWithNibName:@"SuggestionsTableViewCell" bundle:nil];
+    //[self.suggestionsTableView registerNib:nib forCellReuseIdentifier:@"SuggestionsTableViewCell"];
     [self.view addSubview:self.suggestionsTableView];
     [self addSuggestionsViewConstraints];
     [self showSuggestions:NO];
@@ -244,7 +247,7 @@
     cell.usernameLabel.text = [cell.usernameLabel.text stringByAppendingString:suggestion.userLogin];
     cell.displayNameLabel.text = suggestion.displayName;
     
-    cell.imageView.image = [UIImage imageNamed:@"gravatar.png"];
+    cell.avatarImageView.image = [UIImage imageNamed:@"gravatar.png"];
     
     return cell;
 }

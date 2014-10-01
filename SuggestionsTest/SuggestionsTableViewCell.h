@@ -9,9 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @interface SuggestionsTableViewCell : UITableViewCell
+{
+    NSString *reuseID;
+}
 
-@property (weak, nonatomic) IBOutlet UILabel *usernameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *displayNameLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
+@property (nonatomic, strong) UILabel *usernameLabel;
+@property (nonatomic, strong) UILabel *displayNameLabel;
+@property (nonatomic, strong) UIImageView *avatarImageView;
 
 @end
