@@ -230,6 +230,42 @@
     }];
 }
 
+- (void)showSuggestions:(BOOL)show
+{
+    [super showSuggestions:show];
+    
+    if (show) {
+        // scroll to the bottom (to keep the results "growing" up from the reply box)        
+        NSUInteger searchResultsCount = [self.searchResults count];
+        
+        if (0 < searchResultsCount) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:searchResultsCount - 1 inSection:0];
+            [self.suggestionsTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];        
+        }
+    }
+}
+
+/*
+ * Expand the header as needed to keep table results next to the comment reply box
+ */
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    NSUInteger resultsHeaderHeight = 0;
+    
+    // TODO: Figure out a way to do this without harcoding the 48+1+1 (50) below
+    // (i.e. pick up the row height programmatically)
+        
+    NSUInteger searchResultsCount = [self.searchResults count];
+    if (0 < searchResultsCount) {
+        NSUInteger searchResultsHeight = searchResultsCount * 50;
+        if (searchResultsHeight < self.suggestionsTableView.frame.size.height) {
+            resultsHeaderHeight = self.suggestionsTableView.frame.size.height - searchResultsHeight - 50;
+        }
+    }
+    
+    return resultsHeaderHeight;
+}
+
 #pragma mark - UITableViewDelegate Methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

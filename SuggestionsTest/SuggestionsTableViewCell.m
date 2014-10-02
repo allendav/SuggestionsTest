@@ -36,6 +36,7 @@
         [self.displayNameLabel setTextColor:[UIColor colorWithRed:0.667 green:0.667 blue:0.667 alpha:1.0]];
         [self.displayNameLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:16.0f]];
         [self.displayNameLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        self.displayNameLabel.textAlignment = NSTextAlignmentRight;
         [self.contentView addSubview:self.displayNameLabel];
 
         self.avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 16, 16)];
@@ -44,11 +45,11 @@
         self.avatarImageView.image = [UIImage imageNamed:@"gravatar.png"];
         [self.avatarImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
         [self.contentView addSubview:self.avatarImageView];
-        
+
         NSDictionary *views = @{@"contentview": self.contentView,
                                 @"username": self.usernameLabel,
                                 @"displayname": self.displayNameLabel,
-                                @"avatar": self.avatarImageView };  
+                                @"avatar": self.avatarImageView };
         
         // Horizontal spacing
         NSArray *horizConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[avatar(32)]-16-[username]-[displayname]-|"

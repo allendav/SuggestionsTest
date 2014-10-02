@@ -60,6 +60,10 @@
     // Add the suggestions view and its constraints
     self.suggestionsTableView = [[UITableView alloc] initWithFrame:CGRectZero];
     self.suggestionsTableView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.suggestionsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.suggestionsTableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.suggestionsTableView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5];
+    self.suggestionsTableView.contentMode = UIViewContentModeBottom;
     self.suggestionsTableView.dataSource = self;
     self.suggestionsTableView.delegate = self;
     
@@ -127,7 +131,7 @@
                                                                       metrics:nil
                                                                         views:views]];
     
-    // TODO: Pin bottom of view to top of keyboard (not the whole view like this)
+    // Pin the suggestions view top and bottom to the super view top and bottom
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[suggestionsview]|"
                                                                       options:0
                                                                       metrics:nil
@@ -200,18 +204,22 @@
     if ([keypress isEqualToString:@"@"]) {
         if ([keypress isEqualToString:word]) {
             [self updateSearchResultsForText:@""];
+            [self.suggestionsTableView reloadData];
             [self showSuggestions:YES];
         }
     } else {
         if ([word hasPrefix:@"@"]) {
             [self updateSearchResultsForText:[word substringFromIndex:1]];
             [self.suggestionsTableView reloadData];
+            [self showSuggestions:YES];
         } else {
             [self updateSearchResultsForText:@""];
+            [self.suggestionsTableView reloadData];
             [self showSuggestions:NO];
         }
     }
 }
+
 
 - (void)updateSearchResultsForText:(NSString *)text
 {
