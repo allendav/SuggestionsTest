@@ -115,4 +115,22 @@
     [super updateViewConstraints];
 }
 
+#pragma mark - UITableViewDelegate Methods
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Grab what they picked
+    Suggestion *suggestion = [self.searchResults objectAtIndex:indexPath.row];
+    
+    // Grow the selection by the length of the searchText
+    NSRange selectionRange = self.postView.selectedRange;
+    selectionRange.location -= (self.searchText.length);
+    selectionRange.length += (self.searchText.length);
+    self.postView.selectedRange = selectionRange;
+    [self.postView replaceRange:[self.postView selectedTextRange] withText:suggestion.userLogin];    
+    
+    // Hide the suggestions view - we're done with it
+    [self showSuggestions:NO];
+}
+
 @end
