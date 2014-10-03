@@ -184,12 +184,6 @@
     self.title = @"Comment UX";
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];

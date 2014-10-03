@@ -101,7 +101,7 @@
 }
 
 // Called when the UIKeyboardDidShowNotification is sent.
-- (void)keyboardWasShown:(NSNotification*)aNotification
+- (void)keyboardWasShown:(NSNotification *)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
@@ -135,16 +135,6 @@
                                                                       options:0
                                                                       metrics:nil
                                                                         views:views]];    
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -278,18 +268,6 @@
     // The child class implementation should then call showSuggestions:NO when it is done
     // with its unique logic to hide the suggestions view and reset the search results, ala
     [self showSuggestions:NO];
-}
-
-
-#pragma mark - View lifecycle
-
-- (void)dealloc
-{
-    self.scrollView = nil;
-    
-    //self.suggestionsTableView.delegate = nil;
-    //self.suggestionsTableView.dataSource = nil;
-    //self.suggestionsTableView = nil;
 }
 
 @end
