@@ -90,6 +90,28 @@
     [self.postView addConstraint:self.textHConstraint];
 }
 
+- (void)addSuggestionsViewConstraints
+{
+    // Note:  We are overriding the base class method here so that we can pin
+    // the bottom of the suggestions view to the top of the comment reply view
+    
+    // Pin the suggestions view left and right edges to the super view edges
+    NSDictionary *views = @{@"suggestionsview": self.suggestionsTableView };    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[suggestionsview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];
+    
+    // Pin the suggestions view top and bottom to the super view top and bottom
+    // TODO: Do this in a way that allows us to adjust this if we rotate
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-124-[suggestionsview]|"
+                                                                      options:0
+                                                                      metrics:nil
+                                                                        views:views]];    
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -110,12 +132,35 @@
     [self.view layoutIfNeeded];
 }
 
-- (void)updateViewConstraints
+- (void)showSuggestions:(BOOL)show
 {
-    [super updateViewConstraints];
+    [super showSuggestions:show];
+    
+    if (show) {
+        // Scroll the text view if needed to keep the caret visible
+        
+        // TODO: Cache this so we don't bother animating if the offset didn't change
+        
+        CGRect caretRect = [self.postView caretRectForPosition:self.postView.selectedTextRange.end];        
+        CGPoint newOffset = self.scrollView.contentOffset;
+        
+        newOffset.y = caretRect.origin.y - 90; // TODO - don't hardcode this
+        
+        if (newOffset.y < 0) {
+            newOffset.y = 0;
+        }
+        
+        [self.scrollView setContentOffset:newOffset animated:YES];
+        
+    }
 }
 
 #pragma mark - UITableViewDelegate Methods
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0;
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

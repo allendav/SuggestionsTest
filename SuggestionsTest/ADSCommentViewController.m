@@ -152,8 +152,6 @@
 {
     // Note:  We are overriding the base class method here so that we can pin
     // the bottom of the suggestions view to the top of the comment reply view
-    
-    NSLog(@"in ADSCommentViewController addSuggestionsViewConstraints");
 
     // if the reply view doesn't exist yet, don't bother adding constraints yet
     if (self.replyView) {
@@ -245,6 +243,8 @@
     }
 }
 
+#pragma mark - UITableViewDelegate Methods
+
 /*
  * Expand the header as needed to keep table results next to the comment reply box
  */
@@ -265,8 +265,6 @@
     
     return resultsHeaderHeight;
 }
-
-#pragma mark - UITableViewDelegate Methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

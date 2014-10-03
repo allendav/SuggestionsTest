@@ -63,7 +63,6 @@
     self.suggestionsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.suggestionsTableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectZero];
     self.suggestionsTableView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.5];
-    self.suggestionsTableView.contentMode = UIViewContentModeBottom;
     self.suggestionsTableView.dataSource = self;
     self.suggestionsTableView.delegate = self;
     
