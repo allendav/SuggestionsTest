@@ -137,7 +137,7 @@
     // start listening to the keyboard so we can adjust that constant
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
+                                             selector:@selector(keyboardWillChangeFrame:)
                                                  name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
     
@@ -197,7 +197,11 @@
     [super updateViewConstraints];
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification {
+/*
+ * UIKeyboardWillChangeFrameNotification
+ */
+
+- (void)keyboardWillChangeFrame:(NSNotification *)notification {
     NSDictionary *info = [notification userInfo];
     NSValue *kbFrame = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
     NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
@@ -211,6 +215,10 @@
         [self.view layoutIfNeeded];
     }];
 }
+
+/*
+ * UIKeyboardWillHideNotification
+ */
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     NSDictionary *info = [notification userInfo];
